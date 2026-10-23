@@ -37,11 +37,13 @@ Le projet est utile comme prototype de recherche et pour l’illustration de mé
 ├── src/
 │   ├── lib.rs
 │   └── bin/
-│       └── simulation_demo.rs
+│       ├── simulation_demo.rs
+│       └── benchmark_detection.rs
 ├── tests/
 │   └── offensive_detection.rs
 ├── docs/
-│   └── design_notes.md
+│   ├── design_notes.md
+│   └── roadmap_maturite.md
 ├── scripts/
 │   └── visuel.py
 └── legacy/
@@ -74,11 +76,59 @@ Le dépôt contient désormais une base de tests Rust exploitable pour tester le
 - insertion de bits parasites,
 - détection d’anomalie sur un flux de comparaison.
 
+## Benchmark de détection
+
+Un mini benchmark est inclus pour mesurer la costabilité de la détection sur plusieurs tailles de flux et niveaux d’attaque.
+
+```bash
+cargo run --bin benchmark_detection
+```
+
+Le benchmark exécute des variations sur :
+
+- taille du flux : 512, 2048, 8192 bits,
+- amplitude de l’attaque : 1, 4, 8, 16, 64 bits,
+- nombre d’itérations : 200+ reproductions.
+
+Il affiche :
+
+- temps total d’exécution,
+- temps moyen par essai,
+- taux de détection,
+- niveau de robustesse observée.
+
+## Feuille de route de maturité
+
+Le projet suit une progression utile et honnête :
+
+1. Prototype fonctionnel
+   - encodage compact,
+   - comparaison de flux,
+   - détection binaire par divergence.
+2. Formalisation du protocole
+   - règles de parsing,
+   - gestion d’erreurs,
+   - cas de troncature et d’insertion.
+3. Robustesse offensive
+   - tests adversariaux,
+   - mesures de détection,
+   - scénarios de corruption réalistes.
+4. Instrumentation de recherche
+   - benchmarks,
+   - journalisation des détections,
+   - métriques de latence.
+5. Maturité logicielle
+   - CI,
+   - documentation mécanique,
+   - API plus stable,
+   - versionnement sémantique.
+
 ## Exécution locale
 
 ```bash
 cargo test
 cargo run --bin simulation_demo
+cargo run --bin benchmark_detection
 ```
 
 ## Limites
