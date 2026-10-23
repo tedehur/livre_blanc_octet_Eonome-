@@ -1,32 +1,62 @@
 # Octet Économe
 
-> Prototype de transmission compacte avec redondance et détection de divergence.
+> Prototype de transmission compacte, redondance structurelle et détection rapide de divergence.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/Rust-1.70%2B-orange)](https://www.rust-lang.org/)
 [![Status](https://img.shields.io/badge/Status-Prototype-blue)](#)
 
-## Résumé
+## Vue d’ensemble
 
-Octet Économe est un prototype de protocole de transmission inspiré par les principes suivants :
+Octet Économe est un prototype de protocole de transmission conçu comme une démonstration de concept sur la redondance structurée et la détection de divergence.
 
-- optimisation du format de transport pour les caractères fréquents,
-- ajout d’un signal de contrôle compact,
-- comparaison de deux flux indépendants,
-- détection rapide de divergence pour couper la propagation d’une corruption.
+L’idée centrale est simple :
 
-Le dépôt sert de base de démonstration technique et de test de concept. Il ne prétend pas à une solution de production critique, ni à une validation formelle de sécurité.
+- compresser le format de transport des caractères les plus fréquents,
+- conserver un signal de contrôle compact,
+- comparer deux flux indépendants,
+- réagir immédiatement au premier écart détecté.
 
-## Cadrage scientifique
+Le projet ne prétend pas à une solution de production critique. Il vise plutôt à fournir un cadre reproductible d’expérimentation, de démonstration technique et de discussion scientifique sur les mécanismes de détection de corruption et d’intégrité de flux.
 
-Le projet est utile comme prototype de recherche et pour l’illustration de mécanismes de redondance structurée, notamment :
+## Pourquoi ce projet existe
 
-- comparaison bit-à-bit de flux,
-- détection d’altération locale ou globale,
-- réaction immédiate au premier écart,
-- démonstration d’un mécanisme de sécurité par divergence.
+Les systèmes critiques doivent souvent choisir entre :
 
-## Structure du dépôt
+- transmission compacte,
+- redondance de contrôle,
+- détection rapide des altérations,
+- réaction immédiate à l’anomalie.
+
+Octet Économe explore cette combinaison sous une forme minimale et facilement testable.
+
+## Architecture de la démonstration
+
+### 1. Encodage compact
+
+Le protocole associe un bit de contrôle à un bloc de données standard. Les caractères fréquents peuvent être représentés de manière plus compacte, tandis que les caractères moins fréquents restent encodés selon une convention explicite.
+
+Exemple :
+
+```text
+[1] -> interprété comme un espace
+[0][01000001] -> bit de contrôle + octet ASCII 'A'
+```
+
+### 2. Redondance de flux
+
+Le système compare :
+
+- un flux principal,
+- un flux de contrôle ou miroir.
+
+Le cœur du mécanisme repose sur une comparaison bit-à-bit. Toute divergence est interprétée comme une anomalie possible.
+
+### 3. Détection de divergence
+
+Le moteur de validation analyse les deux flux et déclenche un état de détection dès qu’un écart apparaît. Cela permet d’isoler l’origine de la corruption et d’empêcher sa propagation.
+
+## Ce que le dépôt contient
 
 ```text
 .
@@ -50,163 +80,114 @@ Le projet est utile comme prototype de recherche et pour l’illustration de mé
     └── simulation_offensve.md
 ```
 
-## Modèle de fonctionnement
+## Démonstration fonctionnelle
 
-Le prototype fonctionne selon un principe simple :
+Le dépôt contient une simulation de flux avec injection d’attaque, ainsi qu’un mini benchmark de performances.
 
-- un flux principal est encodé de manière compacte,
-- un flux de contrôle est comparé au flux principal,
-- tout écart entre les deux flux est considéré comme une anomalie potentielle,
-- le système réagit au premier point de divergence détecté.
-
-## Exemple de codage
-
-```text
-[1] -> interprété comme un espace
-[0][01000001] -> bit de contrôle + octet ASCII 'A'
-```
-
-## Tests disponibles
-
-Le dépôt contient désormais une base de tests Rust exploitable pour tester les cas suivants :
+### Scénarios couverts
 
 - flux nominal sans corruption,
-- divergence locale sur le flux principal,
-- interruption/troncature de flux,
+- inversion de bits sur le flux principal,
+- troncature de signal,
 - insertion de bits parasites,
-- détection d’anomalie sur un flux de comparaison.
+- cas limite avec flux vide.
 
-## Mini benchmark de détection
+## Exécution rapide
 
-Un mini benchmark est inclus pour mesurer la costabilité de la détection sur plusieurs tailles de flux et niveaux d’attaque.
-
-```bash
-cargo run --bin benchmark_detection
-```
-
-Le benchmark exécute des variations sur :
-
-- taille du flux : 512, 2048, 8192 bits,
-- amplitude de l’attaque : 1, 4, 8, 16, 64 bits,
-- nombre d’itérations : 200+ reproductions.
-
-Il affiche :
-
-- temps total d’exécution,
-- temps moyen par essai,
-- taux de détection,
-- niveau de robustesse observé.
-
-## Feuille de route de maturité
-
-Le projet suit une progression utile et honnête :
-
-1. Prototype fonctionnel
-   - encodage compact,
-   - comparaison de flux,
-   - détection binaire par divergence.
-2. Formalisation du protocole
-   - règles de parsing,
-   - gestion d’erreurs,
-   - cas de troncature et d’insertion.
-3. Robustesse offensive
-   - tests adversariaux,
-   - mesures de détection,
-   - scénarios de corruption réalistes.
-4. Instrumentation de recherche
-   - benchmarks,
-   - journalisation des détections,
-   - métriques de latence.
-5. Maturité logicielle
-   - CI,
-   - documentation mécanique,
-   - API plus stable,
-   - versionnement sémantique.
-
-## Comment exécuter, comparer et interpréter les résultats
-
-### 1. Lancer les tests
+### Tests
 
 ```bash
 cargo test
 ```
 
-Les tests couvrent les scénarios suivants :
-
-- flux nominal sans corruption,
-- attaque par inversion de bits,
-- troncature du flux,
-- insertion de bits parasites,
-- cas limite avec flux vide.
-
-### 2. Lancer la démonstration
+### Démonstration
 
 ```bash
 cargo run --bin simulation_demo
 ```
 
-Cette exécution affiche un scénario de détection d’écart entre le flux principal et le flux de contrôle. En cas de divergence, le programme renvoie un statut de type :
+### Benchmark
+
+```bash
+cargo run --bin benchmark_detection
+```
+
+## Comment lire les résultats
+
+### État nominal
+
+Le programme renvoie un statut de type :
+
+```text
+Nominal
+```
+
+Cela indique qu’aucune divergence n’a été détectée entre les deux flux.
+
+### État d’attaque détectée
+
+Le moteur peut renvoyer un statut de type :
 
 ```text
 CritiqueAttaqueDetectee { raison, action }
 ```
 
-Un résultat nominal signifie que le flux est homogène, sans divergence identifiée.
+Ce signal signifie qu’une divergence a été observée et qu’une action de protection a dû être déclenchée.
 
-### 3. Lancer le benchmark
+### Benchmark
 
-```bash
-cargo run --bin benchmark_detection
-```
-
-Le benchmark compare plusieurs configurations de flux et d’attaque, puis affiche :
+Le mini benchmark affiche :
 
 - taille du flux,
 - taille de l’attaque,
 - nombre d’itérations,
 - taux de détection,
-- temps moyen par itération.
+- temps moyen par essai.
 
-### 4. Interpréter les résultats
+On interprète ces résultats en regardant surtout :
 
-Le signal le plus important à observer est le taux de détection :
+- stabilité de la détection sur plusieurs tailles de flux,
+- taux de détection proche de 100 % sur des scénarios représentatifs,
+- coût en temps de traitement acceptable pour la taille de charge considérée.
 
-- valeur proche de 100 % : la divergence est détectée systématiquement,
-- valeur plus faible : le mécanisme est sensible au type de corruption ou à la taille du flux,
-- temps moyen très faible : bon signe de réactivité,
-- temps moyen élevé ou très variable : indice de coût de traitement à surveiller.
+## Feuille de route de maturité
 
-En pratique, on regarde surtout :
+Le projet suit une progression claire et honnête :
 
-- la stabilité sur plusieurs tailles de flux,
-- la montée du temps de traitement avec la charge,
-- le comportement dans les attaques les plus petites et les plus grandes.
+1. Prototype fonctionnel
+2. Formalisation du protocole
+3. Robustesse offensive
+4. Instrumentation de recherche
+5. Maturité logicielle
 
-### 5. Exemple de lecture
+Pour plus de détails, voir :
 
-```text
-[bench] label=tiny     flux=512 attack=1 iters=200 detected=200/200 rate=100.00% avg=...us
-[bench] label=medium   flux=2048 attack=16 iters=200 detected=198/200 rate=99.00% avg=...us
-```
+- `docs/roadmap_maturite.md`
+- `docs/design_notes.md`
 
-Un résultat stable autour de 99–100 % sur plusieurs scénarios est un bon indicateur de robustesse. En revanche, des baisses nettes sur des tailles critiques indiquent un point de vigilance à documenter.
+## Limites et cadrage
 
-## Exécution locale
+Le projet est un prototype de recherche et de démonstration technique. Il ne doit pas être interprété comme :
 
-```bash
-cargo test
-cargo run --bin simulation_demo
-cargo run --bin benchmark_detection
-```
+- une solution de sécurité certifiée,
+- un mécanisme de production critique,
+- une preuve formelle de robustesse adversariale.
 
-## Limites
-
-La démonstration est un prototype de recherche. Elle n’a pas vocation à remplacer :
-
-- un système critique en production,
-- une validation formelle de sécurité,
-- une implémentation de protocole certifiée.
+Cette limite est volontairement explicite afin de garder une base claire, reproductible et critique.
 
 ## Licence
 
 MIT.
+
+## Contribution
+
+Les améliorations les plus utiles concernent :
+
+- formalisation du protocole,
+- scénarios d’attaque plus réalistes,
+- instrumentations de benchmark,
+- documentation d’architecture et de contribution.
+
+---
+
+Ce dépôt est conçu comme une base technique reproductible et lisible pour une démonstration d’intégrité de flux par redondance structurée.
