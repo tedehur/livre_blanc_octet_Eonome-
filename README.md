@@ -76,7 +76,7 @@ Le dépôt contient désormais une base de tests Rust exploitable pour tester le
 - insertion de bits parasites,
 - détection d’anomalie sur un flux de comparaison.
 
-## Benchmark de détection
+## Mini benchmark de détection
 
 Un mini benchmark est inclus pour mesurer la costabilité de la détection sur plusieurs tailles de flux et niveaux d’attaque.
 
@@ -95,7 +95,7 @@ Il affiche :
 - temps total d’exécution,
 - temps moyen par essai,
 - taux de détection,
-- niveau de robustesse observée.
+- niveau de robustesse observé.
 
 ## Feuille de route de maturité
 
@@ -122,6 +122,74 @@ Le projet suit une progression utile et honnête :
    - documentation mécanique,
    - API plus stable,
    - versionnement sémantique.
+
+## Comment exécuter, comparer et interpréter les résultats
+
+### 1. Lancer les tests
+
+```bash
+cargo test
+```
+
+Les tests couvrent les scénarios suivants :
+
+- flux nominal sans corruption,
+- attaque par inversion de bits,
+- troncature du flux,
+- insertion de bits parasites,
+- cas limite avec flux vide.
+
+### 2. Lancer la démonstration
+
+```bash
+cargo run --bin simulation_demo
+```
+
+Cette exécution affiche un scénario de détection d’écart entre le flux principal et le flux de contrôle. En cas de divergence, le programme renvoie un statut de type :
+
+```text
+CritiqueAttaqueDetectee { raison, action }
+```
+
+Un résultat nominal signifie que le flux est homogène, sans divergence identifiée.
+
+### 3. Lancer le benchmark
+
+```bash
+cargo run --bin benchmark_detection
+```
+
+Le benchmark compare plusieurs configurations de flux et d’attaque, puis affiche :
+
+- taille du flux,
+- taille de l’attaque,
+- nombre d’itérations,
+- taux de détection,
+- temps moyen par itération.
+
+### 4. Interpréter les résultats
+
+Le signal le plus important à observer est le taux de détection :
+
+- valeur proche de 100 % : la divergence est détectée systématiquement,
+- valeur plus faible : le mécanisme est sensible au type de corruption ou à la taille du flux,
+- temps moyen très faible : bon signe de réactivité,
+- temps moyen élevé ou très variable : indice de coût de traitement à surveiller.
+
+En pratique, on regarde surtout :
+
+- la stabilité sur plusieurs tailles de flux,
+- la montée du temps de traitement avec la charge,
+- le comportement dans les attaques les plus petites et les plus grandes.
+
+### 5. Exemple de lecture
+
+```text
+[bench] label=tiny     flux=512 attack=1 iters=200 detected=200/200 rate=100.00% avg=...us
+[bench] label=medium   flux=2048 attack=16 iters=200 detected=198/200 rate=99.00% avg=...us
+```
+
+Un résultat stable autour de 99–100 % sur plusieurs scénarios est un bon indicateur de robustesse. En revanche, des baisses nettes sur des tailles critiques indiquent un point de vigilance à documenter.
 
 ## Exécution locale
 
