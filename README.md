@@ -1,150 +1,193 @@
-# Écosystème Octet-Économe & Architecture en Miroir Destructif
-> **Paradigme de protection stéganographique par le vide et redondance aéronautique pour infrastructures critiques (Réseaux Hospitaliers).**
+# Octet Économe
 
-[![License: MIT](https://shields.io)](https://opensource.org)
-[![Language: Rust](https://shields.io)](https://rust-lang.org)
-[![Security: Sanctuarized](https://shields.io)](#)
+> Prototype de transmission compacte, redondance structurelle et détection rapide de divergence.
 
-Le web moderne souffre d'une obésité structurelle et d'une vulnérabilité systémique face aux cyberattaques par ransomware et aux compromissions de réseaux internes. 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT)
+[![Rust](https://img.shields.io/badge/Rust-1.70%2B-orange)](https://www.rust-lang.org/)
+[![Status](https://img.shields.io/badge/Status-Prototype-blue)](#)
 
-Ce projet présente un nouveau paradigme de protection pour les bases de données d'importance vitale (OIV, systèmes de santé). Il réunit une **sanctuarisation absolue de la donnée originelle**, un **chiffrement furtif par le vide**, et une **validation synchrone inspirée de l'aviation**.
+## Vue d’ensemble
 
----
+Octet Économe est un prototype de protocole de transmission conçu comme une démonstration de concept sur la redondance structurée et la détection de divergence.
 
-## 1. Le Protocole Octet-Économe : Web Binaire & Stéganographie
+L’idée centrale est simple :
 
-Le protocole abandonne le code HTML verbeux et la norme ASCII standard à 8 bits pour un flux binaire asymétrique natif, éliminant la charge d'analyse syntaxique et piégeant la structure de données.
+- compresser le format de transport des caractères les plus fréquents,
+- conserver un signal de contrôle compact,
+- comparer deux flux indépendants,
+- réagir immédiatement au premier écart détecté.
 
-* **Le Bit Unique (L'Espace) :** Le caractère le plus fréquent du web (l'espace) quitte le codage sur 8 bits pour être représenté par **un seul bit à `1`**. Il devient 8 fois plus léger.
-* **Le Léger Décalage (Le Signal Doublé) :** Lorsqu'un caractère standard doit être transmis, un bit de contrôle `0` préfixe l'octet ASCII natif. Le processeur applique alors un décalage immédiat pour lire un bloc de 9 bits (1 bit de flag + 8 bits de données).
-* **Écologie Numérique :** Ce format garantit un gain de stockage de plus de 50 % à la source sur le code formaté ou indenté (HTML/JSON), réduisant massivement l'empreinte carbone et l'usage de la bande passante.
+Le projet ne prétend pas à une solution de production critique. Il vise plutôt à fournir un cadre reproductible d’expérimentation, de démonstration technique et de discussion scientifique sur les mécanismes de détection de corruption et d’intégrité de flux.
 
-### Structure du flux binaire :
+## Pourquoi ce projet existe
+
+Les systèmes critiques doivent souvent choisir entre :
+
+- transmission compacte,
+- redondance de contrôle,
+- détection rapide des altérations,
+- réaction immédiate à l’anomalie.
+
+Octet Économe explore cette combinaison sous une forme minimale et facilement testable.
+
+## Architecture de la démonstration
+
+### 1. Encodage compact
+
+Le protocole associe un bit de contrôle à un bloc de données standard. Les caractères fréquents peuvent être représentés de manière plus compacte, tandis que les caractères moins fréquents restent encodés selon une convention explicite.
+
+Exemple :
+
 ```text
-[1] -> Interprété instantanément comme un 'Espace' (1 bit)
-[0][01000001] -> Bit de contrôle '0' + Décalage + Lecture de l'octet ASCII 'A' (9 bits)
+[1] -> interprété comme un espace
+[0][01000001] -> bit de contrôle + octet ASCII 'A'
 ```
 
----
+### 2. Redondance de flux
 
-## 2. Le Miroir Destructif : Redondance Aéronautique & Piégeage par le Vide
+Le système compare :
 
-L'architecture rejette les défenses logicielles périmétriques classiques au profit d'une infrastructure réactive matérielle ultra-sécurisée.
+- un flux principal,
+- un flux de contrôle ou miroir.
 
-### Double Flux Synchrone (Alpha / Bêta)
-Inspiré des systèmes de commandes de vol de l'aviation, le signal est envoyé simultanément sur deux réseaux physiques strictement indépendants :
-* **Réseau Alpha :** Canal principal (ex. fibre noire interne).
-* **Réseau Bêta :** Canal miroir isolé (ex. liaison laser ou cuivre blindé dédié).
+Le cœur du mécanisme repose sur une comparaison bit-à-bit. Toute divergence est interprétée comme une anomalie possible.
 
-### Clones Inversés & Piégeage Stéganographique
-Les utilisateurs et les applications médicales n'accèdent jamais à la base de données mère. Ils interagissent exclusivement avec un essaim de **clones jetables transparents**.
-* Les clones fournissent des informations réelles et exactes aux soignants.
-* L'intégrité de leur écriture est protégée par la distribution stéganographique des espaces (les bits `1`).
-* **L'effet fusible :** Si un ransomware tente de chiffrer un clone, sa modification détruit involontairement la séquence exacte des espaces. À cause du décalage de 9 bits, l'erreur est immédiatement amplifiée.
+### 3. Détection de divergence
 
-### Nœud de Vote & Destruction Réactive
-Un processus matériel bas niveau (comparateur neuronal émulé au niveau du BIOS ou d'une carte réseau dédiée) compare bit à bit les flux Alpha et Bêta en temps réel. **Au premier octet divergent ou modifié par un processus non autorisé, le clone est instantanément pulvérisé** et son accès réseau est coupé au cycle d'horloge près, avant que le chiffrement malveillant ne puisse se propager.
+Le moteur de validation analyse les deux flux et déclenche un état de détection dès qu’un écart apparaît. Cela permet d’isoler l’origine de la corruption et d’empêcher sa propagation.
 
-### Séparation Physique des Privilèges
-Toute écriture ou modification sur la base de données maître (matrice) requiert obligatoirement l'insertion d'une **clé cryptographique matérielle** par un administrateur physiquement présent et habilité. Le secret mathématique d'écriture n'existe à aucun moment sur les serveurs exposés au réseau.
+## Ce que le dépôt contient
 
----
-
-## 3. Preuve de Concept (PoC) - Microcode Embarqué en Rust
-
-Voici l'implémentation de référence du nœud de traitement embarqué. Ce code valide la faisabilité d'une comparaison asymétrique à mémoire fixe (zéro allocation dynamique) et à latence quasi-nulle.
-
-```rust
-#[derive(Debug, PartialEq)]
-enum StatutSysteme {
-    Nominal,
-    CritiqueAttaqueDetectee { raison: String, action: String },
-}
-
-struct ResultatNoeud {
-    statut: StatutSysteme,
-    donnees_decodees: String,
-    bits_traites: usize,
-}
-
-/// Analyse synchrone et bit à bit des flux physiques Alpha et Bêta.
-fn verificateur_noeud_embarque(
-    flux_alpha: &[bool],
-    flux_beta: &[bool],
-    longueur_attendue: usize,
-) -> ResultatNoeud {
-    let mut donnees_decodees = String::new();
-    let mut index_bit = 0;
-    let mut caractere_compte = 0;
-
-    while index_bit < flux_alpha.len() && caractere_compte < longueur_attendue {
-        
-        // 1. REDONDANCE AÉRONAUTIQUE : Cross-checking physique instantané
-        if flux_alpha[index_bit] != flux_beta[index_bit] {
-            return ResultatNoeud {
-                statut: StatutSysteme::CritiqueAttaqueDetectee {
-                    raison: format!("Divergence physique détectée au bit global {} !", index_bit),
-                    action: "PULVÉRISATION INSTANTANÉE DU CLONE ET ISOLEMENT DU SEGMENT".to_string(),
-                },
-                donnees_decodees,
-                bits_traites: index_bit,
-            };
-        }
-
-        let bit_courant = flux_alpha[index_bit];
-
-        // 2. ANALYSE STÉGANOGRAPHIQUE : Gestion de l'Espace (Bit unique 1)
-        if bit_courant {
-            donnees_decodees.push(' ');
-            index_bit += 1;
-            caractere_compte += 1;
-        } else {
-            // Signal '0' de décalage : Lecture du bloc ASCII de 8 bits
-            if index_bit + 9 > flux_alpha.len() { break; }
-
-            let mut octet_valeur: u8 = 0;
-
-            for i in 0..8 {
-                let position = index_bit + 1 + i;
-                
-                if flux_alpha[position] != flux_beta[position] {
-                    return ResultatNoeud {
-                        statut: StatutSysteme::CritiqueAttaqueDetectee {
-                            raison: format!("Sabotage détecté dans le bloc ASCII à la position {}", position),
-                            action: "PULVÉRISATION DU CLONE".to_string(),
-                        },
-                        donnees_decodees,
-                        bits_traites: position,
-                    };
-                }
-
-                if flux_alpha[position] {
-                    octet_valeur |= 1 << (7 - i);
-                }
-            }
-
-            donnees_decodees.push(octet_valeur as char);
-            index_bit += 9; // Avance du flag (1) + bloc de données (8)
-            caractere_compte += 1;
-        }
-    }
-
-    ResultatNoeud {
-        statut: StatutSysteme::Nominal,
-        donnees_decodees,
-        bits_traites: index_bit,
-    }
-}
+```text
+.
+├── Cargo.toml
+├── README.md
+├── LICENSE
+├── .gitignore
+├── src/
+│   ├── lib.rs
+│   └── bin/
+│       ├── simulation_demo.rs
+│       └── benchmark_detection.rs
+├── tests/
+│   └── offensive_detection.rs
+├── docs/
+│   ├── design_notes.md
+│   └── roadmap_maturite.md
+├── scripts/
+│   └── visuel.py
+└── legacy/
+    └── simulation_offensve.md
 ```
 
+## Démonstration fonctionnelle
+
+Le dépôt contient une simulation de flux avec injection d’attaque, ainsi qu’un mini benchmark de performances.
+
+### Scénarios couverts
+
+- flux nominal sans corruption,
+- inversion de bits sur le flux principal,
+- troncature de signal,
+- insertion de bits parasites,
+- cas limite avec flux vide.
+
+## Exécution rapide
+
+### Tests
+
+```bash
+cargo test
+```
+
+### Démonstration
+
+```bash
+cargo run --bin simulation_demo
+```
+
+### Benchmark
+
+```bash
+cargo run --bin benchmark_detection
+```
+
+## Comment lire les résultats
+
+### État nominal
+
+Le programme renvoie un statut de type :
+
+```text
+Nominal
+```
+
+Cela indique qu’aucune divergence n’a été détectée entre les deux flux.
+
+### État d’attaque détectée
+
+Le moteur peut renvoyer un statut de type :
+
+```text
+CritiqueAttaqueDetectee { raison, action }
+```
+
+Ce signal signifie qu’une divergence a été observée et qu’une action de protection a dû être déclenchée.
+
+### Benchmark
+
+Le mini benchmark affiche :
+
+- taille du flux,
+- taille de l’attaque,
+- nombre d’itérations,
+- taux de détection,
+- temps moyen par essai.
+
+On interprète ces résultats en regardant surtout :
+
+- stabilité de la détection sur plusieurs tailles de flux,
+- taux de détection proche de 100 % sur des scénarios représentatifs,
+- coût en temps de traitement acceptable pour la taille de charge considérée.
+
+## Feuille de route de maturité
+
+Le projet suit une progression claire et honnête :
+
+1. Prototype fonctionnel
+2. Formalisation du protocole
+3. Robustesse offensive
+4. Instrumentation de recherche
+5. Maturité logicielle
+
+Pour plus de détails, voir :
+
+- `docs/roadmap_maturite.md`
+- `docs/design_notes.md`
+
+## Limites et cadrage
+
+Le projet est un prototype de recherche et de démonstration technique. Il ne doit pas être interprété comme :
+
+- une solution de sécurité certifiée,
+- un mécanisme de production critique,
+- une preuve formelle de robustesse adversariale.
+
+Cette limite est volontairement explicite afin de garder une base claire, reproductible et critique.
+
+## Licence
+
+MIT.
+
+## Contribution
+
+Les améliorations les plus utiles concernent :
+
+- formalisation du protocole,
+- scénarios d’attaque plus réalistes,
+- instrumentations de benchmark,
+- documentation d’architecture et de contribution.
+
 ---
 
-## 4. Feuille de Route & Appel aux Contributeurs
-
-Ce modèle nécessite un effort communautaire open-source pour passer de la validation théorique à l'implémentation industrielle.
-
-* **Ingénierie Bas Niveau (C, Rust, WebAssembly) :** Création du compilateur de fichiers texte/HTML vers le format binaire asymétrique, et écriture du moteur de rendu basse couche pour le navigateur Octet-Économe.
-* **Architecture Réseau / Hardware :** Conception de cartes réseau d'acquisition (FPGA/ASIC) capables de gérer nativement le double flux synchrone et de déclencher une interruption matérielle d'autodestruction.
-* **Sécurité Offensive (Red Team) :** Audit des mécanismes de détection par le vide et résistance du système face aux outils d'exploitation et de chiffrement automatisés.
-
-Pour contribuer, ouvrez une *Issue* ou proposez une *Pull Request* sur les modules de compilation.
+Ce dépôt est conçu comme une base technique reproductible et lisible pour une démonstration d’intégrité de flux par redondance structurée.
